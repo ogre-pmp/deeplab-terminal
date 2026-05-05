@@ -126,7 +126,6 @@ if "route" not in st.session_state:
 # 4. VIEW CONTROLLERS (UI Components)
 # ==========================================
 def view_landing():
-    # Injecting the exact HTML to match the reference image
     st.markdown('<div class="matrix-title">THE DEEP LAB</div>', unsafe_allow_html=True)
     st.markdown('<div class="matrix-subtitle">Quantitative Market Research & Data-Driven Trading Terminal</div>', unsafe_allow_html=True)
     
@@ -165,4 +164,52 @@ def view_login():
         if st.button("BACK"): navigate("auth_gateway")
 
 def view_signup():
-    st.markdown("<h2>DEPLOY NEW NODE</h2>", unsafe_allow_html
+    st.markdown("<h2>DEPLOY NEW NODE</h2>", unsafe_allow_html=True)
+    
+    _, col, _ = st.columns([1, 2, 1])
+    with col:
+        new_user = st.text_input("NEW IDENTIFIER")
+        new_pwd = st.text_input("NEW ENCRYPTED KEY", type="password")
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        if st.button("REGISTER IDENTITY"):
+            if new_user and new_pwd:
+                if new_user in st.session_state.users_db:
+                    st.error("IDENTIFIER ALREADY EXISTS.")
+                else:
+                    st.session_state.users_db[new_user] = hash_password(new_pwd)
+                    st.success("NODE DEPLOYED. PROCEED TO LOGIN.")
+                    navigate("login")
+        if st.button("BACK"): navigate("auth_gateway")
+
+def view_dashboard():
+    st.markdown("<h2>TERMINAL <span class='accent-text'>ONLINE</span></h2>", unsafe_allow_html=True)
+    st.markdown(f"<p>Operator: {st.session_state.current_user} | Status: Secure</p>", unsafe_allow_html=True)
+    st.divider()
+    
+    st.info("QUANTITATIVE DATA STREAM PENDING INTEGRATION...")
+    
+    if st.button("TERMINATE SESSION"):
+        st.session_state.current_user = None
+        navigate("landing")
+
+# ==========================================
+# 5. MAIN APPLICATION LOOP
+# ==========================================
+def main():
+    init_system()
+    init_db()
+    
+    routes = {
+        "landing": view_landing,
+        "auth_gateway": view_auth_gateway,
+        "login": view_login,
+        "signup": view_signup,
+        "dashboard": view_dashboard
+    }
+    
+    current_view = routes.get(st.session_state.route)
+    current_view()
+
+if __name__ == "__main__":
+    main()
