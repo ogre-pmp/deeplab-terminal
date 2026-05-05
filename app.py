@@ -1,215 +1,93 @@
 import streamlit as st
-import hashlib
+# (Re-importing necessary libraries inside app.py might be needed based on existing structure)
+import pandas as pd
 
-# ==========================================
-# 1. SYSTEM CONFIGURATION & UI INJECTION
-# ==========================================
-def init_system():
-    st.set_page_config(page_title="Deep Lab | Terminal", page_icon="🟢", layout="centered")
-    
-    # Ultra-Neon Matrix CSS Injection
+# This is an upgraded, Google-grade placeholder for view_dashboard()
+# It uses common trading terminal components. You must personalize these
+# based on the details you extract from your video screenshots.
+
+def view_dashboard():
+    # --- Professional Dashboard Styling ---
+    # Put this inside view_dashboard() so it applies only to this state.
     st.markdown("""
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap');
+        .main-content { padding: 2rem; background-color: #030303; }
         
-        :root {
-            --bg-color: #000000;
-            --accent: #39FF14;
-            --surface: #050505;
-            --text-main: #FFFFFF;
-            --text-muted: #A0A0A0;
+        .dashboard-widget {
+            background: #0A0A0A;
+            border: 1px solid #111;
+            border-radius: 4px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        .dashboard-widget:hover { border-color: #39FF14; }
         
-        .stApp { 
-            background-color: var(--bg-color); 
-            background-image: radial-gradient(circle at center, rgba(10,30,10,0.4) 0%, rgba(0,0,0,1) 70%);
-        }
-        
-        /* --- Matrix Landing Page Specifics --- */
-        .matrix-title {
-            font-family: 'Courier Prime', monospace;
-            color: var(--accent);
-            font-size: 4.5rem;
-            font-weight: 700;
-            text-align: center;
-            text-shadow: 0 0 10px #39FF14, 0 0 20px #39FF14, 0 0 40px #39FF14, 0 0 80px rgba(57,255,20,0.4);
-            letter-spacing: 6px;
-            margin-bottom: 5px;
-            margin-top: 10vh;
-        }
-        
-        .matrix-subtitle {
-            font-family: 'Courier Prime', monospace;
-            color: var(--text-muted);
-            text-align: center;
-            font-size: 1.1rem;
-            letter-spacing: 2px;
-            margin-bottom: 50px;
-        }
-
-        /* --- Institutional UI Elements --- */
-        h2, h3 { 
-            font-family: 'JetBrains Mono', monospace; 
-            color: var(--text-main) !important; 
-            font-weight: 700;
-            text-align: center;
-        }
-        
-        .accent-text { color: var(--accent); }
-        p { color: var(--text-muted); text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; }
-        
-        /* Hollow Glowing Button */
-        .stButton>button { 
-            background-color: #000000; 
-            color: var(--accent); 
-            border: 2px solid var(--accent); 
-            border-radius: 4px; 
-            width: 100%; 
-            padding: 15px; 
-            font-family: 'Courier Prime', monospace;
-            font-size: 1rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            box-shadow: 0 0 10px rgba(57, 255, 20, 0.2) inset, 0 0 10px rgba(57, 255, 20, 0.2);
-            transition: all 0.3s ease;
-        }
-        
-        .stButton>button:hover { 
-            background-color: rgba(57, 255, 20, 0.1);
-            color: var(--accent);
-            box-shadow: 0 0 20px rgba(57, 255, 20, 0.6) inset, 0 0 20px rgba(57, 255, 20, 0.6);
-            border-color: var(--accent);
-            transform: scale(1.02);
-        }
-        
-        input { 
-            background-color: var(--surface) !important; 
-            color: var(--accent) !important; 
-            border: 1px solid rgba(57, 255, 20, 0.3) !important; 
-            border-radius: 2px !important;
-            font-family: 'JetBrains Mono', monospace !important;
-            text-align: center;
-        }
-        input:focus { border-color: var(--accent) !important; box-shadow: 0 0 10px rgba(57,255,20,0.2) !important; }
-        hr { border-color: #111; margin: 2rem 0; }
-        header, footer { visibility: hidden; }
+        .metric-card { text-align: center; }
+        .metric-card p { text-transform: uppercase; letter-spacing: 2px; font-size: 0.75rem; margin: 0; color: #888; }
+        .metric-card h2 { font-family: 'JetBrains Mono', monospace; font-size: 2.5rem !important; margin: 0; }
         </style>
     """, unsafe_allow_html=True)
 
-# ==========================================
-# 2. SECURITY & AUTHENTICATION MODULE
-# ==========================================
-def hash_password(password: str) -> str:
-    return hashlib.sha256(password.encode()).hexdigest()
-
-def init_db():
-    if "users_db" not in st.session_state:
-        st.session_state.users_db = {"Rayane": hash_password("DeepLabAdmin")}
-
-def verify_credentials(user: str, pwd: str) -> bool:
-    if user in st.session_state.users_db:
-        return st.session_state.users_db[user] == hash_password(pwd)
-    return False
-
-# ==========================================
-# 3. ROUTING & STATE MANAGEMENT
-# ==========================================
-def navigate(route: str):
-    st.session_state.route = route
-    st.rerun()
-
-if "route" not in st.session_state:
-    st.session_state.route = "landing"
-
-# ==========================================
-# 4. VIEW CONTROLLERS (UI Components)
-# ==========================================
-def view_landing():
-    st.markdown('<div class="matrix-title">THE DEEP LAB</div>', unsafe_allow_html=True)
-    st.markdown('<div class="matrix-subtitle">Quantitative Market Research & Data-Driven Trading Terminal</div>', unsafe_allow_html=True)
-    
-    _, col, _ = st.columns([1, 2, 1])
-    with col:
-        if st.button("ACCESS TERMINAL"):
-            navigate("auth_gateway")
-
-def view_auth_gateway():
-    st.markdown("<h2>SYSTEM AUTHENTICATION</h2>", unsafe_allow_html=True)
-    st.markdown("<p>Select your access tier.</p><br>", unsafe_allow_html=True)
-    
-    _, col, _ = st.columns([1, 1.5, 1])
-    with col:
-        if st.button("EXISTING NODE [LOGIN]"): navigate("login")
-        st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("NEW NODE [SIGN UP]"): navigate("signup")
-        st.markdown("<hr>", unsafe_allow_html=True)
-        if st.button("ABORT"): navigate("landing")
-
-def view_login():
-    st.markdown("<h2>ACCESS GATEWAY</h2>", unsafe_allow_html=True)
-    
-    _, col, _ = st.columns([1, 2, 1])
-    with col:
-        user = st.text_input("IDENTIFIER")
-        pwd = st.text_input("ENCRYPTED KEY", type="password")
-        st.markdown("<br>", unsafe_allow_html=True)
-        
-        if st.button("AUTHORIZE CONNECTION"):
-            if verify_credentials(user, pwd):
-                st.session_state.current_user = user
-                navigate("dashboard")
-            else:
-                st.error("ACCESS DENIED: Invalid Node Credentials.")
-        if st.button("BACK"): navigate("auth_gateway")
-
-def view_signup():
-    st.markdown("<h2>DEPLOY NEW NODE</h2>", unsafe_allow_html=True)
-    
-    _, col, _ = st.columns([1, 2, 1])
-    with col:
-        new_user = st.text_input("NEW IDENTIFIER")
-        new_pwd = st.text_input("NEW ENCRYPTED KEY", type="password")
-        st.markdown("<br>", unsafe_allow_html=True)
-        
-        if st.button("REGISTER IDENTITY"):
-            if new_user and new_pwd:
-                if new_user in st.session_state.users_db:
-                    st.error("IDENTIFIER ALREADY EXISTS.")
-                else:
-                    st.session_state.users_db[new_user] = hash_password(new_pwd)
-                    st.success("NODE DEPLOYED. PROCEED TO LOGIN.")
-                    navigate("login")
-        if st.button("BACK"): navigate("auth_gateway")
-
-def view_dashboard():
-    st.markdown("<h2>TERMINAL <span class='accent-text'>ONLINE</span></h2>", unsafe_allow_html=True)
-    st.markdown(f"<p>Operator: {st.session_state.current_user} | Status: Secure</p>", unsafe_allow_html=True)
+    # --- Header Row ---
+    st.markdown(f"<h2>OPERATOR <span class='accent-text'>TERMINAL</span> V1.0</h2>", unsafe_allow_html=True)
+    st.markdown(f"<p>Operator: {st.session_state.current_user} | Status: Secure | Network: Mainnet</p>", unsafe_allow_html=True)
     st.divider()
+
+    # --- MAIN CONTENT LAYOUT (Columns) ---
+    # (USER TASK: Look at your video screenshots. What layout is used?)
+    # Adjust column ratios to match the visual architecture. E.g., Chart/Side Panel.
+    col_chart, col_side = st.columns([3, 2])
+
+    with col_chart:
+        # (USER TASK: Look at your video screenshots. What chart library is used? E.g., TradingView widget, Plotly chart).
+        # Provide me the screenshot, and I will write the code to render it here.
+        
+        st.markdown('<div class="dashboard-widget"><h3>PRICE ACTION ANALYSIS</h3>', unsafe_allow_html=True)
+        # Using an iframe for TradingView widget (common in trading apps) as a placeholder.
+        tradingview_widget = '<iframe src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_7679a&symbol=NASDAQ%3ANQ1!&interval=1&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=%5B%5D&theme=dark&style=1&timezone=Etc%2FUTC&studies_overrides=%7B%7D&overrides=%7B%7D&enabled_features=%5B%5D&disabled_features=%5B%5D&locale=en&utm_source=localhost&utm_medium=widget&utm_campaign=chart&utm_term=NASDAQ%3ANQ1!" width="100%" height="400" frameborder="0" allowtransparency="true" scrolling="no" allowfullscreen></iframe>'
+        st.markdown(tradingview_widget, unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with col_side:
+        # (USER TASK: Look at your video screenshots. How is data presented? E.g., tables, list, metrics?)
+        # Provide me the screenshots and tell me the data points shown, I will code the UI.
+        
+        st.markdown('<div class="dashboard-widget"><h3>QUANTITATIVE ORDER FLOW</h3>', unsafe_allow_html=True)
+        # Placeholder for Order Book data
+        order_book_data = {
+            'TYPE': ['BID', 'BID', 'ASK', 'ASK'],
+            'PRICE': [18250.25, 18249.75, 18251.50, 18252.00],
+            'SIZE (LOTS)': [5.1, 8.3, 4.2, 7.9]
+        }
+        df_order_book = pd.DataFrame(order_book_data)
+        st.dataframe(df_order_book, use_container_width=True, hide_index=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    # --- METRICS ROW ---
+    # (USER TASK: Look at your video screenshots. What metrics are displayed in this row?)
+    # Tell me the titles and provide example values. E.g., Open Positions, Daily P&L.
     
-    st.info("QUANTITATIVE DATA STREAM PENDING INTEGRATION...")
+    col1, col2, col3, col4 = st.columns(4)
+
+    # Professional metric widget function
+    def professional_metric(title, value, accent=False):
+        st.markdown(f"""
+        <div class="dashboard-widget metric-card">
+            <p>{title}</p>
+            <h2 class="{'accent-text' if accent else ''}">{value}</h2>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col1: professional_metric("Open Positions", "3")
+    with col2: professional_metric("Daily Net P&L", "$1,450.22", accent=True)
+    with col3: professional_metric("Available Margin", "$15,200.50")
+    with col4: professional_metric("System Health", "STABLE")
+
+    st.divider()
     
     if st.button("TERMINATE SESSION"):
         st.session_state.current_user = None
-        navigate("landing")
-
-# ==========================================
-# 5. MAIN APPLICATION LOOP
-# ==========================================
-def main():
-    init_system()
-    init_db()
-    
-    routes = {
-        "landing": view_landing,
-        "auth_gateway": view_auth_gateway,
-        "login": view_login,
-        "signup": view_signup,
-        "dashboard": view_dashboard
-    }
-    
-    current_view = routes.get(st.session_state.route)
-    current_view()
-
-if __name__ == "__main__":
-    main()
+        # navigate("landing") # Assuming 'navigate' function is available from existing code
+        st.session_state.route = "landing"
+        st.rerun()
