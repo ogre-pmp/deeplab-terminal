@@ -1,106 +1,100 @@
 import streamlit as st
-import pandas as pd
 
-# 1. Page Configuration
-st.set_page_config(page_title="Deep Lab | Hub", page_icon="🟢", layout="wide")
+# 1. إعدادات الصفحة والثيم النيون
+st.set_page_config(page_title="Deep Lab | Terminal", page_icon="🟢", layout="centered")
 
-# 2. Visual Theme (Neon Green)
 st.markdown("""
     <style>
     .stApp { background-color: #000000; }
-    h1, h2, h3 { color: #39FF14 !important; font-family: 'Courier New', Courier, monospace; text-shadow: 0 0 5px #39FF14; }
-    p, .stMarkdown, li { color: #E0E0E0; }
-    .stButton>button { background-color: #000000; color: #39FF14; border: 2px solid #39FF14; border-radius: 8px; width: 100%; font-size: 18px; font-weight: bold; transition: 0.3s; box-shadow: 0 0 10px #39FF14; }
+    h1, h2, h3 { color: #39FF14 !important; font-family: 'Courier New', Courier, monospace; text-shadow: 0 0 10px #39FF14; text-align: center; }
+    p { color: #E0E0E0; text-align: center; }
+    .stButton>button { 
+        background-color: #000000; color: #39FF14; border: 2px solid #39FF14; 
+        border-radius: 10px; width: 100%; padding: 10px; font-weight: bold;
+        box-shadow: 0 0 10px #39FF14; transition: 0.3s;
+    }
     .stButton>button:hover { background-color: #39FF14; color: #000000; box-shadow: 0 0 20px #39FF14; }
-    .stTextInput>div>div>input { color: #39FF14; background-color: #111111; border: 1px solid #39FF14; }
-    .tl-box { border: 1px solid #39FF14; padding: 20px; border-radius: 10px; background-color: #0a0a0a; text-align: center; margin-top: 20px; }
+    input { background-color: #111111 !important; color: #39FF14 !important; border: 1px solid #39FF14 !important; }
     </style>
 """, unsafe_allow_html=True)
 
-# --- 3. ROLE-BASED LOGIN SYSTEM ---
-# هنا نحددو شكون Mentor وشكون Student
-USERS = {
-    "Rayane": {"password": "DeepLabAdmin", "role": "mentor"},
-    "Student1": {"password": "Trader2026", "role": "student"},
-    "Student2": {"password": "Trader2027", "role": "student"}
-}
+# --- 2. إدارة الحالة (Session State) ---
+if "step" not in st.session_state:
+    st.session_state.step = "welcome"  # البداية من صفحة الترحيب
+if "users_db" not in st.session_state:
+    # قاعدة بيانات مؤقتة (في الحقيقة نحتاجو Database بصح هادي للمثال)
+    st.session_state.users_db = {"Rayane": "DeepLabAdmin"} 
 
-def check_password():
-    def password_entered():
-        user = st.session_state["username"]
-        passwd = st.session_state["password"]
-        
-        if user in USERS and USERS[user]["password"] == passwd:
-            st.session_state["password_correct"] = True
-            st.session_state["role"] = USERS[user]["role"] # نسجلو دور المستخدم
-            st.session_state["current_user"] = user        # نسجلو اسمو
-            del st.session_state["password"]
-            del st.session_state["username"]
-        else:
-            st.session_state["password_correct"] = False
+# --- 3. الواجهات ---
 
-    if "password_correct" not in st.session_state:
-        st.markdown("<h1 style='text-align: center;'>🟢 SECURE LOGIN</h1>", unsafe_allow_html=True)
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            st.text_input("Username", key="username")
-            st.text_input("Password", type="password", key="password")
-            st.button("Login", on_click=password_entered)
-        return False
-    elif not st.session_state["password_correct"]:
-        st.markdown("<h1 style='text-align: center;'>🟢 SECURE LOGIN</h1>", unsafe_allow_html=True)
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            st.text_input("Username", key="username")
-            st.text_input("Password", type="password", key="password")
-            st.button("Login", on_click=password_entered)
-            st.error("❌ Access Denied: Incorrect credentials.")
-        return False
-    else:
-        return True
+# المرحلة 1: صفحة الـ Access Terminal
+if st.session_state.step == "welcome":
+    st.markdown("<br><br><br>", unsafe_allow_html=True)
+    st.title("THE DEEP LAB")
+    st.markdown("### QUANTITATIVE TRADING TERMINAL")
+    st.markdown("<p>Enter the matrix to access proprietary trading tools and analytics.</p>", unsafe_allow_html=True)
+    if st.button("ACCESS TERMINAL"):
+        st.session_state.step = "auth_choice"
+        st.rerun()
 
-# --- 4. MAIN DASHBOARDS (Mentor vs Student) ---
-if check_password():
-    user_role = st.session_state["role"]
-    user_name = st.session_state["current_user"]
-    
-    col1, col2 = st.columns([4, 1])
+# المرحلة 2: اختيار Login أو Sign Up
+elif st.session_state.step == "auth_choice":
+    st.title("AUTHENTICATION")
+    col1, col2 = st.columns(2)
     with col1:
-        st.title(f"🟢 THE DEEP LAB | {user_role.upper()} VIEW")
-        st.markdown(f"Welcome back, **{user_name}**.")
+        if st.button("LOGIN"):
+            st.session_state.step = "login"
+            st.rerun()
     with col2:
-        if st.button("Logout"):
-            st.session_state.clear()
-            st.experimental_rerun()
-            
-    st.divider()
+        if st.button("SIGN UP"):
+            st.session_state.step = "signup"
+            st.rerun()
+    if st.button("← Back"):
+        st.session_state.step = "welcome"
+        st.rerun()
 
-    # ==========================================
-    # واجهة الـ MENTOR (أنت)
-    # ==========================================
-    if user_role == "mentor":
-        st.subheader("🛠️ Admin Dashboard")
-        st.write("As a mentor, you can see the performance of all students and upload master data.")
-        
-        # مثال: مكان رفع ملفات TradeLocker
-        st.markdown("### 📥 Upload Student Data (TradeLocker CSV)")
-        uploaded_file = st.file_uploader("Upload Trade history", type=['csv'])
-        if uploaded_file is not None:
-            st.success("File uploaded and assigned successfully!")
-            
-        # تقدر تزيد هنا إحصائيات عامة تاع كل الطلبة
+# المرحلة 3: صفحة الـ LOGIN
+elif st.session_state.step == "login":
+    st.title("LOGIN")
+    user = st.text_input("Username")
+    pwd = st.text_input("Password", type="password")
+    if st.button("SUBMIT"):
+        if user in st.session_state.users_db and st.session_state.users_db[user] == pwd:
+            st.success(f"Welcome back {user}!")
+            st.session_state.step = "dashboard"
+            st.rerun()
+        else:
+            st.error("Invalid credentials!")
+    if st.button("← Back"):
+        st.session_state.step = "auth_choice"
+        st.rerun()
 
-    # ==========================================
-    # واجهة الـ STUDENT (الطلبة)
-    # ==========================================
-    elif user_role == "student":
-        st.subheader("📈 My Portfolio")
-        st.write("Here you can track your personal performance and access trading tools.")
-        
-        # الطالب يشوف غير إحصائياتو الخاصة
-        st.markdown("""
-        <div class="tl-box">
-            <h3 style="color: #E0E0E0;">Your TradeLocker Stats</h3>
-            <p>Win Rate: --% | Drawdown: --% | Profit: $--</p>
-        </div>
-        """, unsafe_allow_html=True)
+# المرحلة 4: صفحة الـ SIGN UP
+elif st.session_state.step == "signup":
+    st.title("CREATE ACCOUNT")
+    new_user = st.text_input("Choose Username")
+    new_pwd = st.text_input("Create Password", type="password")
+    confirm_pwd = st.text_input("Confirm Password", type="password")
+    
+    if st.button("REGISTER"):
+        if new_user in st.session_state.users_db:
+            st.error("Username already exists!")
+        elif new_pwd != confirm_pwd:
+            st.error("Passwords do not match!")
+        elif new_user and new_pwd:
+            st.session_state.users_db[new_user] = new_pwd
+            st.success("Account created! Please login.")
+            st.session_state.step = "login"
+            st.rerun()
+    if st.button("← Back"):
+        st.session_state.step = "auth_choice"
+        st.rerun()
+
+# المرحلة 5: الـ Dashboard (بعد الدخول)
+elif st.session_state.step == "dashboard":
+    st.title("🟢 TERMINAL ACTIVE")
+    st.markdown(f"### Hello, {st.session_state.get('username', 'Trader')}")
+    st.write("Your trading analytics and PMP tools are now unlocked.")
+    if st.button("LOGOUT"):
+        st.session_state.step = "welcome"
+        st.rerun()
