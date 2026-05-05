@@ -7,7 +7,6 @@ import hashlib
 def init_system():
     st.set_page_config(page_title="Deep Lab | Terminal", page_icon="🟢", layout="centered")
     
-    # Minified, High-Performance CSS (Neo-Brutalism/Glassmorphism hybrid)
     st.markdown("""
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
@@ -34,7 +33,6 @@ def init_system():
         
         p { color: var(--text-muted); text-align: center; font-family: 'Inter', sans-serif; font-size: 0.95rem; }
         
-        /* Institutional UI Elements */
         .stButton>button { 
             background-color: transparent; 
             color: var(--accent); 
@@ -75,13 +73,10 @@ def init_system():
 # 2. SECURITY & AUTHENTICATION MODULE
 # ==========================================
 def hash_password(password: str) -> str:
-    """Cryptographic hashing for credential verification."""
     return hashlib.sha256(password.encode()).hexdigest()
 
 def init_db():
-    """Initialize mock database with pre-hashed admin credentials."""
     if "users_db" not in st.session_state:
-        # 'DeepLabAdmin' hashed for security
         st.session_state.users_db = {"Rayane": hash_password("DeepLabAdmin")}
 
 def verify_credentials(user: str, pwd: str) -> bool:
@@ -93,7 +88,6 @@ def verify_credentials(user: str, pwd: str) -> bool:
 # 3. ROUTING & STATE MANAGEMENT
 # ==========================================
 def navigate(route: str):
-    """Centralized state mutation."""
     st.session_state.route = route
     st.rerun()
 
@@ -122,4 +116,73 @@ def view_auth_gateway():
         if st.button("EXISTING NODE [LOGIN]"): navigate("login")
         st.markdown("<br>", unsafe_allow_html=True)
         if st.button("NEW NODE [SIGN UP]"): navigate("signup")
-        st.markdown("<hr>",
+        st.markdown("<hr>", unsafe_allow_html=True)
+        if st.button("ABORT"): navigate("landing")
+
+def view_login():
+    st.markdown("<h2>ACCESS GATEWAY</h2>", unsafe_allow_html=True)
+    
+    _, col, _ = st.columns([1, 2, 1])
+    with col:
+        user = st.text_input("IDENTIFIER")
+        pwd = st.text_input("ENCRYPTED KEY", type="password")
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        if st.button("AUTHORIZE CONNECTION"):
+            if verify_credentials(user, pwd):
+                st.session_state.current_user = user
+                navigate("dashboard")
+            else:
+                st.error("ACCESS DENIED: Invalid Node Credentials.")
+        if st.button("BACK"): navigate("auth_gateway")
+
+def view_signup():
+    st.markdown("<h2>DEPLOY NEW NODE</h2>", unsafe_allow_html=True)
+    
+    _, col, _ = st.columns([1, 2, 1])
+    with col:
+        new_user = st.text_input("NEW IDENTIFIER")
+        new_pwd = st.text_input("NEW ENCRYPTED KEY", type="password")
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        if st.button("REGISTER IDENTITY"):
+            if new_user and new_pwd:
+                if new_user in st.session_state.users_db:
+                    st.error("IDENTIFIER ALREADY EXISTS.")
+                else:
+                    st.session_state.users_db[new_user] = hash_password(new_pwd)
+                    st.success("NODE DEPLOYED. PROCEED TO LOGIN.")
+                    navigate("login")
+        if st.button("BACK"): navigate("auth_gateway")
+
+def view_dashboard():
+    st.markdown("<h2>TERMINAL <span class='accent-text'>ONLINE</span></h2>", unsafe_allow_html=True)
+    st.markdown(f"<p>Operator: {st.session_state.current_user} | Status: Secure</p>", unsafe_allow_html=True)
+    st.divider()
+    
+    st.info("QUANTITATIVE DATA STREAM PENDING INTEGRATION...")
+    
+    if st.button("TERMINATE SESSION"):
+        st.session_state.current_user = None
+        navigate("landing")
+
+# ==========================================
+# 5. MAIN APPLICATION LOOP
+# ==========================================
+def main():
+    init_system()
+    init_db()
+    
+    routes = {
+        "landing": view_landing,
+        "auth_gateway": view_auth_gateway,
+        "login": view_login,
+        "signup": view_signup,
+        "dashboard": view_dashboard
+    }
+    
+    current_view = routes.get(st.session_state.route)
+    current_view()
+
+if __name__ == "__main__":
+    main()
