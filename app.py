@@ -1,169 +1,142 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Deep Lab | Professional Trading Hub</title>
+import streamlit as st
+
+# 1. Page Config
+st.set_page_config(page_title="Deep Lab | Terminal", page_icon="🟢", layout="centered")
+
+# 2. Ultra-Professional Neo-Dark CSS
+st.markdown("""
     <style>
-        /* الأساسيات - Neo-Black Theme */
-        :root {
-            --neon-green: #39FF14;
-            --deep-black: #050505;
-            --glass-bg: rgba(10, 10, 10, 0.7);
-            --text-gray: #888888;
-        }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=JetBrains+Mono:wght@300&display=swap');
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }
-        body { background-color: var(--deep-black); color: white; overflow-x: hidden; scroll-behavior: smooth; }
+    /* Deep Black Canvas */
+    .stApp { background-color: #050505; }
 
-        /* خلفية الفيديو مع طبقة حماية (Overlay) */
-        .hero {
-            position: relative;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
+    /* Typography */
+    h1, h2, h3 { 
+        font-family: 'Inter', sans-serif; 
+        color: #FFFFFF !important; 
+        font-weight: 700;
+        letter-spacing: -1.5px;
+        text-align: center;
+    }
+    
+    .neo-accent {
+        color: #39FF14;
+        text-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+        font-family: 'JetBrains Mono', monospace;
+    }
 
-        #bg-video {
-            position: absolute;
-            top: 50%; left: 50%;
-            min-width: 100%; min-height: 100%;
-            width: auto; height: auto;
-            transform: translate(-50%, -50%);
-            z-index: -2;
-            filter: brightness(0.4);
-        }
+    p { color: #666666; text-align: center; font-family: 'Inter', sans-serif; font-size: 0.9rem; }
 
-        .overlay {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: radial-gradient(circle, transparent 20%, var(--deep-black) 100%);
-            z-index: -1;
-        }
+    /* Professional Neo-Buttons */
+    .stButton>button { 
+        background-color: transparent; 
+        color: #39FF14; 
+        border: 1px solid rgba(57, 255, 20, 0.2); 
+        border-radius: 2px; 
+        width: 100%; 
+        padding: 10px; 
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        transition: all 0.5s ease;
+    }
+    
+    .stButton>button:hover { 
+        background-color: rgba(57, 255, 20, 0.02);
+        border: 1px solid #39FF14;
+        box-shadow: 0 0 20px rgba(57, 255, 20, 0.15);
+        color: #39FF14;
+    }
 
-        /* المحتوى الرئيسي - Glassmorphism */
-        .content {
-            text-align: center;
-            z-index: 1;
-            padding: 40px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(57, 255, 20, 0.1);
-            border-radius: 20px;
-            max-width: 800px;
-            animation: fadeIn 1.5s ease-out;
-        }
+    /* Clean Input Fields */
+    input { 
+        background-color: #0A0A0A !important; 
+        color: #FFFFFF !important; 
+        border: 1px solid #1A1A1A !important; 
+        border-radius: 2px !important;
+        font-family: 'Inter', sans-serif !important;
+    }
+    input:focus {
+        border-color: #39FF14 !important;
+        box-shadow: none !important;
+    }
 
-        h1 {
-            font-size: 4rem;
-            letter-spacing: -2px;
-            margin-bottom: 10px;
-            font-weight: 800;
-        }
+    /* Minimalist Divider */
+    hr { border: 0; border-top: 1px solid #111; margin: 30px 0; }
 
-        h1 span {
-            color: var(--neon-green);
-            text-shadow: 0 0 15px rgba(57, 255, 20, 0.3);
-        }
-
-        p.tagline {
-            color: var(--text-gray);
-            font-size: 1.2rem;
-            letter-spacing: 2px;
-            margin-bottom: 40px;
-            text-transform: uppercase;
-        }
-
-        /* القفلة الاحترافية - Neo Style */
-        .btn-access {
-            display: inline-block;
-            padding: 15px 45px;
-            color: var(--neon-green);
-            text-decoration: none;
-            border: 1px solid var(--neon-green);
-            border-radius: 5px;
-            font-weight: bold;
-            letter-spacing: 3px;
-            transition: all 0.4s;
-            background: transparent;
-            position: relative;
-        }
-
-        .btn-access:hover {
-            background: var(--neon-green);
-            color: var(--deep-black);
-            box-shadow: 0 0 30px rgba(57, 255, 20, 0.5);
-            transform: translateY(-3px);
-        }
-
-        /* أقسام إضافية للشرح */
-        .features {
-            padding: 100px 5%;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            background: var(--deep-black);
-        }
-
-        .card {
-            padding: 40px;
-            background: #0a0a0a;
-            border: 1px solid #111;
-            border-radius: 10px;
-            transition: 0.3s;
-        }
-
-        .card:hover {
-            border-color: var(--neon-green);
-        }
-
-        .card h3 { color: var(--neon-green); margin-bottom: 15px; font-size: 1.5rem; }
-        .card p { color: var(--text-gray); line-height: 1.6; }
-
-        /* أنيميشين */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @media (max-width: 768px) {
-            h1 { font-size: 2.5rem; }
-            .content { margin: 20px; }
-        }
+    /* Sidebar Clean-up */
+    [data-testid="stSidebar"] { background-color: #050505; border-right: 1px solid #111; }
+    
+    header {visibility: hidden;}
+    footer {visibility: hidden;}
     </style>
-</head>
-<body>
+""", unsafe_allow_html=True)
 
-    <section class="hero">
-        <video autoplay muted loop id="bg-video">
-            <source src="video.mp4" type="video/mp4">
-        </video>
-        <div class="overlay"></div>
+# --- 3. Auth Logic ---
+if "step" not in st.session_state:
+    st.session_state.step = "welcome"
+if "users_db" not in st.session_state:
+    st.session_state.users_db = {"Rayane": "DeepLabAdmin"}
 
-        <div class="content">
-            <h1>THE <span>DEEP</span> LAB</h1>
-            <p class="tagline">Institutional Grade Trading Solutions</p>
-            <a href="https://deeplab-terminal.streamlit.app" class="btn-access">ACCESS TERMINAL</a>
-        </div>
-    </section>
+# --- 4. Navigation Control ---
+def navigate_to(step):
+    st.session_state.step = step
+    st.rerun()
 
-    <section class="features">
-        <div class="card">
-            <h3>Alpha Intelligence</h3>
-            <p>Utilizing high-correlation data between NQ and QQQ to define institutional liquidity pools before 09:00 AM NY Open.</p>
-        </div>
-        <div class="card">
-            <h3>Quant Execution</h3>
-            <p>Custom-built analytics terminal for TradeLocker and proprietary firm tracking. Performance is measured by data, not emotions.</p>
-        </div>
-        <div class="card">
-            <h3>Secure Ecosystem</h3>
-            <p>Role-based access control for Mentors and Students, ensuring proprietary strategies remain within the lab.</p>
-        </div>
-    </section>
+# --- 5. Professional Interfaces ---
 
-</body>
-</html>
+# Welcome: Access Terminal Gate
+if st.session_state.step == "welcome":
+    st.markdown("<br><br><br>", unsafe_allow_html=True)
+    st.markdown('<h1>THE <span class="neo-accent">DEEP</span> LAB</h1>', unsafe_allow_html=True)
+    st.markdown("<p>Proprietary Quantitative Strategy Terminal</p>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if st.button("INITIALIZE TERMINAL"):
+            navigate_to("auth_choice")
+
+# Auth Choice: Login or Sign Up
+elif st.session_state.step == "auth_choice":
+    st.markdown("<h2>SYSTEM AUTH</h2>", unsafe_allow_html=True)
+    st.markdown("<p>Identification Required</p>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([1, 1.5, 1])
+    with col2:
+        if st.button("LOGIN PROTOCOL"):
+            navigate_to("login")
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("SIGN UP PROTOCOL"):
+            navigate_to("signup")
+        st.markdown("<br><hr>", unsafe_allow_html=True)
+        if st.button("RETURN"):
+            navigate_to("welcome")
+
+# Login Interface
+elif st.session_state.step == "login":
+    st.markdown("<h2>ACCESS GATE</h2>", unsafe_allow_html=True)
+    st.markdown("<p>Enter Encryption Key</p>", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        user = st.text_input("IDENTIFIER")
+        pwd = st.text_input("KEY", type="password")
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("AUTHORIZE"):
+            if user in st.session_state.users_db and st.session_state.users_db[user] == pwd:
+                st.session_state.logged_user = user
+                navigate_to("dashboard")
+            else:
+                st.error("Authentication Failed.")
+        if st.button("BACK"):
+            navigate_to("auth_choice")
+
+# Sign Up Interface
+elif st.session_state.step == "signup":
+    st.markdown("<h2>NEW PROTOCOL</h2>", unsafe_allow_html=True)
+    st.markdown("<p>Register New Identity</p>", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        new_user = st.text_input("NEW IDENTIFIER")
+        new_pwd = st.text_
